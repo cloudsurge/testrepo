@@ -12,7 +12,6 @@ phases:
         chmod +x terraform
         sudo mv terraform /usr/local/bin/
         terraform version
-
   pre_build:
     commands:
       - |
@@ -24,7 +23,6 @@ phases:
           echo "Pipeline build detected for environment: $ENV"
           export BUILD_TYPE="pipeline"
         fi
-      
       - echo "Build ID: $CODEBUILD_BUILD_ID"
       - echo "Source Version: $CODEBUILD_SOURCE_VERSION"
 
@@ -34,7 +32,6 @@ phases:
         # Initialize Terraform
         echo "Initializing Terraform..."
         terraform init
-        
       - |
         # Run Terraform Plan
         if [ "$BUILD_TYPE" = "pr" ]; then
