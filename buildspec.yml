@@ -23,8 +23,8 @@ phases:
           echo "Pipeline build detected for environment: $ENV"
           export BUILD_TYPE="pipeline"
         fi
-      - echo "Build ID: $CODEBUILD_BUILD_ID"
-      - echo "Source Version: $CODEBUILD_SOURCE_VERSION"
+      - echo "Build ID $CODEBUILD_BUILD_ID"
+      - echo "Source Version $CODEBUILD_SOURCE_VERSION"
   build:
     commands:
       - |
