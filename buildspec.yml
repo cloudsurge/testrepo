@@ -9,7 +9,7 @@ phases:
       - scripts/pre_build.sh
   build:
     commands:
-      - scripts/run_terraform.sh
+      - scripts/build.sh
   post_build:
     commands:
       - scripts/post_build.sh
