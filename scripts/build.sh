@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+echo "=====> Printing env"
+env
+
 # Initialize Terraform
 echo "=====> Initializing Terraform..."
 terraform init
@@ -9,6 +12,9 @@ if [ "$BUILD_TYPE" = "pr" ]; then
   echo ""
   echo "=====> Running scan of infra"
   checkov --framework terraform --directory .
+  echo ""
+  echo "=====> Running terraform validate"
+  terraform validate
   echo ""
   echo "====> Running terraform plan for PR validation..."
   terraform plan -out=tfplan
