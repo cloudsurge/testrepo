@@ -12,6 +12,7 @@ if [ "$BUILD_TYPE" = "pr" ]; then
   echo ""
   echo "=====> Running scan of infra"
   checkov --framework terraform --directory .
+  CHECKOV_EXIT_CODE=$?
   echo ""
   echo "=====> Running terraform validate"
   terraform validate
@@ -41,7 +42,15 @@ if [ "$BUILD_TYPE" = "pr" ]; then
   fi
 
   # Exit with plan result
-  exit $PLAN_EXIT_CODE
+  if [ "$CHECKOV_EXIT_CODE" != "0" ]
+  then
+    exit $CHECKOV_EXIT_CODE
+  fi
+
+  if [ "$PLAN_EXIT_CODE" != "0" ]
+  then
+    exit $PLAN_EXIT_CODE
+  fi
 
 elif [ "$BUILD_TYPE" = "pipeline" ]; then
   echo "=====> Running terraform plan for $ENV environment..."
