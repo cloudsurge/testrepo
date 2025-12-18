@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+echo "Printing environment variables"
+env
+
 # Initialize Terraform
 echo "Initializing Terraform..."
 terraform init
