@@ -11,4 +11,4 @@ terraform version
 
 # Install scanning software
 echo "=====> Installing security scanning: checkov latest"
-pip3 install checkov
+pip3 install -q checkov
