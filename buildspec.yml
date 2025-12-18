@@ -3,35 +3,13 @@ version: 0.2
 phases:
   install:
     commands:
-      - |
-        # Install Terraform
-        TERRAFORM_VERSION=${TERRAFORM_VERSION:-1.14.3}
-        echo "Installing Terraform ${TERRAFORM_VERSION}"
-        wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-        unzip -q terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-        chmod +x terraform
-        sudo mv terraform /usr/local/bin/
-        terraform version
+      - scripts/install.sh
   pre_build:
     commands:
-      - |
-        # Detect build context
-        if [ -z "$ENV" ]; then
-          echo "PR validation build detected"
-          export BUILD_TYPE="pr"
-        else
-          echo "Pipeline build detected for environment: $ENV"
-          export BUILD_TYPE="pipeline"
-        fi
-      - echo "Build ID $CODEBUILD_BUILD_ID"
-      - echo "Source Version $CODEBUILD_SOURCE_VERSION"
+      - scripts/pre_build.sh
   build:
     commands:
-      - bash scripts/run_terraform.sh
+      - scripts/run_terraform.sh
   post_build:
     commands:
-      - echo "Build completed successfully"
-      - |
-        if [ "$BUILD_TYPE" = "pipeline" ] && [ -f "tfplan-$ENV" ]; then
-          echo "Terraform plan saved for $ENV environment"
-        fi
+      - scripts/post_build.sh
