@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 
 # Initialize Terraform
-echo "Initializing Terraform..."
+echo "=====> Initializing Terraform..."
 terraform init
 
 # Run Terraform Plan
 if [ "$BUILD_TYPE" = "pr" ]; then
-  echo "Running terraform plan for PR validation..."
+  echo ""
+  echo "=====> Running scan of infra"
+  checkov --framework terraform --directory .
+  echo ""
+  echo "====> Running terraform plan for PR validation..."
   terraform plan -out=tfplan
   PLAN_EXIT_CODE=$?
 
@@ -14,16 +18,16 @@ if [ "$BUILD_TYPE" = "pr" ]; then
   if [ -n "$GITHUB_TOKEN" ] && [ -n "$CODEBUILD_SOURCE_VERSION" ]; then
     if [ $PLAN_EXIT_CODE -eq 0 ]; then
       STATUS="success"
-      DESCRIPTION="Terraform plan succeeded"
+      DESCRIPTION="=====> Terraform plan succeeded"
     else
       STATUS="failure"
-      DESCRIPTION="Terraform plan failed"
+      DESCRIPTION="=====> Terraform plan failed"
     fi
 
     # Extract PR number if available (format: pr/123)
     if [[ "$CODEBUILD_SOURCE_VERSION" == pr/* ]]; then
       PR_NUMBER=$(echo $CODEBUILD_SOURCE_VERSION | sed 's/pr\///')
-      echo "Reporting status for PR #$PR_NUMBER"
+      echo "=====> Reporting status for PR #$PR_NUMBER"
     fi
 
     # Get commit SHA from source
@@ -34,7 +38,7 @@ if [ "$BUILD_TYPE" = "pr" ]; then
   exit $PLAN_EXIT_CODE
 
 elif [ "$BUILD_TYPE" = "pipeline" ]; then
-  echo "Running terraform plan for $ENV environment..."
+  echo "=====> Running terraform plan for $ENV environment..."
 
   # Select or create workspace for environment
   terraform workspace select $ENV 2>/dev/null || terraform workspace new $ENV
@@ -45,7 +49,7 @@ elif [ "$BUILD_TYPE" = "pipeline" ]; then
   PLAN_EXIT_CODE=$?
 
   if [ $PLAN_EXIT_CODE -ne 0 ]; then
-    echo "Terraform plan failed"
+    echo "=====> Terraform plan failed"
     exit $PLAN_EXIT_CODE
   fi
 
@@ -56,17 +60,17 @@ elif [ "$BUILD_TYPE" = "pipeline" ]; then
 
   # Option 1: Check for apply marker (if previous stage creates it)
   if [ -f ".terraform-apply" ] || [ "${TF_ACTION:-}" = "apply" ]; then
-    echo "Running terraform apply for $ENV environment..."
+    echo "=====> Running terraform apply for $ENV environment..."
     terraform apply -auto-approve tfplan-$ENV
     APPLY_EXIT_CODE=$?
 
     if [ $APPLY_EXIT_CODE -ne 0 ]; then
-      echo "Terraform apply failed"
+      echo "=====> Terraform apply failed"
       exit $APPLY_EXIT_CODE
     fi
 
-    echo "Successfully applied Terraform changes to $ENV environment"
+    echo "=====> Successfully applied Terraform changes to $ENV environment"
   else
-    echo "Plan stage complete. Apply will run in next stage."
+    echo "=====> Plan stage complete. Apply will run in next stage."
   fi
 fi
