@@ -6,7 +6,8 @@ phases:
       - scripts/install.sh
   pre_build:
     commands:
-      - scripts/pre_build.sh
+    # Source the output of this script as it sets variables for later stage use
+      - . scripts/pre_build.sh
   build:
     commands:
       - scripts/build.sh
