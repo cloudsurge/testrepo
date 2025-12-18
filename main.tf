@@ -1,3 +1,7 @@
-data "aws_s3_bucket" "something" {
-  bucket = "something"
+data "aws_iam_policy_document" "super_expansive" {
+  statement {
+    effect = "Allow"
+    actions = [ "*" ]
+    resources = [ "*" ]
+  }
 }
