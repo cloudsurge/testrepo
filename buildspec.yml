@@ -57,16 +57,6 @@ phases:
             # Get commit SHA from source
             COMMIT_SHA="${CODEBUILD_RESOLVED_SOURCE_VERSION:-$CODEBUILD_SOURCE_VERSION}"
             
-            # Report status to GitHub
-            curl -X POST \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github.v3+json" \
-              -H "Content-Type: application/json" \
-              "https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/statuses/${COMMIT_SHA}" \
-              -d "{\"state\":\"$STATUS\",\"description\":\"$DESCRIPTION\",\"context\":\"terraform/plan\",\"target_url\":\"https://console.aws.amazon.com/codesuite/codebuild/projects/${CODEBUILD_PROJECT_NAME}/build/${CODEBUILD_BUILD_ID}\"}" \
-              || echo "Failed to report status to GitHub"
-          fi
-          
           # Exit with plan result
           exit $PLAN_EXIT_CODE
           
