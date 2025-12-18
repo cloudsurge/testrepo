@@ -10,4 +10,5 @@ sudo mv terraform /usr/local/bin/
 terraform version
 
 # Install scanning software
-pip3 install -q checkov
+echo "=====> Installing security scanning: checkov latest"
+pip3 install checkov
